@@ -7,6 +7,7 @@
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_BLACK 0x00000000
 #define RAYS_NUMBER 100
+#define RAY_COLOR 0xffd43b
 #define COLOR_GRAY 0x80808080
 
 typedef struct Circle {
@@ -15,14 +16,15 @@ typedef struct Circle {
   double r;
 } Circle;
 
-// 57th minute we stopped. he is debugging  until 102
-
 typedef struct Ray {
   double x_start, y_start;
   double angle;
 } Ray;
 
-void FillRays(SDL_Surface *surface, Ray rays[RAYS_NUMBER], Uint32 color) {
+void FillRays(SDL_Surface *surface, Ray rays[RAYS_NUMBER], Uint32 color,
+              Circle object) {
+
+  double radius_squared = pow(object.r, 2);
   for (int i = 0; i < RAYS_NUMBER; i++) {
     Ray ray = rays[i];
     int end_of_screen = 0;
@@ -39,8 +41,11 @@ void FillRays(SDL_Surface *surface, Ray rays[RAYS_NUMBER], Uint32 color) {
       if (x_draw < 0 || x_draw > WIDTH || y_draw < 0 || y_draw > HEIGHT) {
         end_of_screen = 1;
       }
-      if (object_hit) {
+      double distance_squared =
+          pow(x_draw - object.x, 2) + pow(y_draw - object.y, 2);
+      if (distance_squared < radius_squared) {
         object_hit = 1;
+        break;
       }
     }
   }
@@ -83,6 +88,7 @@ int main() {
 
   Ray rays[RAYS_NUMBER];
   generate_rays(circle, rays);
+  double obstacle_speed_y = 1;
   // Event loop
   SDL_Event event;
   int running = 1;
@@ -98,10 +104,14 @@ int main() {
       }
     }
     SDL_FillRect(surface, &erase_rect, COLOR_BLACK);
-    FillRays(surface, rays, COLOR_GRAY);
-
+    FillRays(surface, rays, RAY_COLOR, shadow);
     FillCircle(surface, circle, COLOR_WHITE);
     FillCircle(surface, shadow, COLOR_WHITE);
+
+    shadow.y += obstacle_speed_y;
+    if (shadow.y + shadow.r > HEIGHT || shadow.y - shadow.r < 0) {
+      obstacle_speed_y = -obstacle_speed_y;
+    }
     SDL_UpdateWindowSurface(window);
     SDL_Delay(16);
   }
