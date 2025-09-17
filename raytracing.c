@@ -5,6 +5,7 @@
 #define WIDTH 800
 #define HEIGHT 600
 #define COLOR_WHITE 0xFFFFFFFF
+#define COLOR_BLACK 0x00000000
 
 typedef struct Circle {
   double x;
@@ -37,11 +38,8 @@ int main() {
                        SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
 
   SDL_Surface *surface = SDL_GetWindowSurface(window);
-
   Circle circle = (Circle){200, 200, 80};
-  FillCircle(surface, circle, COLOR_WHITE);
-
-  SDL_UpdateWindowSurface(window);
+  SDL_Rect erase_rect = (SDL_Rect){0, 0, WIDTH, HEIGHT};
 
   // Event loop
   SDL_Event event;
@@ -51,8 +49,12 @@ int main() {
       if (event.type == SDL_QUIT) {
         running = 0;
       }
-      if (event.type == SDL_MOUSEMOTION && event.motion.)
+      if (event.type == SDL_MOUSEMOTION && event.motion.state != 0) {
+        circle.x = event.motion.x;
+        circle.y = event.motion.y;
+      }
     }
+    SDL_FillRect(surface, &erase_rect, COLOR_BLACK);
     FillCircle(surface, circle, COLOR_WHITE);
     SDL_UpdateWindowSurface(window);
     SDL_Delay(16);
