@@ -22,7 +22,13 @@ make run          # Build and run
 
 ## Technical Details
 
+
+
+
 - Written in C with SDL2 for graphics
 - Efficient collision detection using squared distances
 - Real-time ray casting with 500 rays
 - ~62.5 FPS rendering with frame rate limiting
+
+https://github.com/user-attachments/assets/0a0c828d-6770-4d10-b1e6-4777e9d344a8
+
